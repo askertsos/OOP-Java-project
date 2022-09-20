@@ -3,6 +3,7 @@ import java.io.FileNotFoundException;
 import java.util.Random;
 import java.io.File;
 
+
 public class Main{
     public static void main(String[] args){
         int Cclass=Integer.parseInt(args[0]);
