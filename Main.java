@@ -12,7 +12,9 @@ public class Main{
         int N=Integer.parseInt(args[4]);
         School myschool=new School(Cclass,Lj,Ls,Lt);
         myschool.placePeopleOnClasses();
-        myschool.print();
+        myschool.beginClasses(N);
+        myschool.empty();
+        // myschool.print();
     }
 }
 
@@ -62,6 +64,13 @@ class Classroom extends Area{
         while(++i<Cnow) students[i].print();
         System.out.println("\nTeacher is : "); teacher.print();
     }
+    Student getStudent(){
+        students[--Cnow].empty();
+        return students[Cnow--]; //Meiwnw to Cnow gia na diagrapsw ton ma8hth
+    }
+    void emptyTeacher(){
+        teacher.empty();
+    }
     public void operate(int N){
         for(int i=0;i<Cnow;i++){
             students[i].makeTired(N,Ls);
@@ -87,6 +96,13 @@ class Floor extends Area{
         for(int i=0;i<3;i++){
             classes[i]=new Classroom(c,Lj,Lt);
             classes[i+3]=new Classroom(c,Ls,Lt);
+        }
+    }
+    Corridor getCorridor(){return corridor;}
+    public void print(){
+        for(int i=0;i<6;i++){
+            System.out.println("\nClass "+(i+1)+" consists of :");
+            classes[i].print();
         }
     }
     public void operate(int N){for(int i=0;i<6;i++) classes[i].operate(N);}
@@ -180,6 +196,35 @@ class School extends Area{
         floors[s.getFloornum()-1].enter(s);
     }
 
+    void beginClasses(int N){
+        System.out.println("\nOperating school for " + N + " hours!\n");
+        for(int i=0;i<3;i++) floors[i].operate(N);
+        for(int i=0;i<3;i++){
+            System.out.println("\nFloor "+(i+1)+" consists of :");
+            floors[i].print();
+        }
+    }
+
+    void empty(){
+        Student temps;
+        for(int i=0;i<3;i++){
+            for(int j=0;j<6;j++){
+                temps=floors[i].getClass(j).getStudent();//Prwta bgazw tous ma8htes
+                floors[i].getCorridor().enter(temps,floors[i].getCorridor().getName());
+                floors[i].getCorridor().exit(temps,floors[i].getCorridor().getName());
+                stairs.enter(temps,stairs.getName());
+                stairs.exit(temps,stairs.getName());
+                yard.enter(temps,yard.getName());
+                yard.exit(temps,yard.getName());
+            }
+        }
+        for(int i=0;i<3;i++){
+            for(int j=0;j<6;j++){
+                floors[i].getClass(j).emptyTeacher();//Prwta bgazw tous ma8htes
+            }
+        }
+    }
+
     void print(){
         int z;
         System.out.println("\nSchool life consists of:");
@@ -224,6 +269,10 @@ class Student extends Person{
         Ctired=0;
         System.out.println("Name : "+ name +"\nFloor number : "+numfl +"\nClass number : "+numcl+"\nCtired is: "+Ctired+"\n");
     }
+    void empty(){
+        System.out.println(name+" starts exiting!");
+        isInClass=false;
+    }
     public void print(){System.out.println(name+"\t"+Ctired);}
 }
 
@@ -237,6 +286,10 @@ class Teacher extends Person{
         isInClass=false;
         Ctired=0;
         System.out.println("Name : "+ name +"\nFloor number : "+numfl +"\nClass number : "+numcl+"\nCtired is: "+Ctired+"\n");
+    }
+    void empty(){
+        System.out.println("Teacher "+name+" is out!");
+        isInClass=false;
     }
     public void print(){System.out.println(name+"\t"+Ctired);}
     public void place(){
